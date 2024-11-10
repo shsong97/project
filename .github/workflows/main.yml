@@ -15,19 +15,22 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: install dependenci
+    - name: install depenendency
       run: npm install
+      working-directory: ./my-vue
 
 
     - name: build
       run: npm run build
+      working-directory: ./my-vuebuild
     
     - name: deploy s3
       env: 
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
-        aws s3 cp \
-        --recursive \
+        aws s3 sync \
         --region ap-northeast-2 \
-        dist s3:shsong97-vue-project
+        build s3://shsong97-vue-project \
+        --delete
+      working-directory: ./my-vuebuild
