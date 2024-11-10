@@ -1,0 +1,33 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches: [ "main" ]
+
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: install dependenci
+      run: npm install
+
+
+    - name: build
+      run: npm run build
+    
+    - name: deploy s3
+      env: 
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: |
+        aws s3 cp \
+        --recursive \
+        --region ap-northeast-2 \
+        dist s3:shsong97-vue-project
