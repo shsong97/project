@@ -13,21 +13,23 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
 
     - name: install depenendency
       run: npm install
 
-
+    - name: node setup
+      uses: actions/setup-node@v2
+      
     - name: build
       run: npm run build
 
-    - name: deploy s3
-      env: 
+    - name: aws login
+      uses: aws-actions/configure-aws-credentials@v1
+      with: 
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        aws s3 sync \
-        --region ap-northeast-2 \
-        build s3://shsong97-vue-project \
-        --delete
+        aws-region: ap-northeast-2
+        
+    - name: deploy
+      run: aws s3 sync ./build s3://shsong97-vue-project
